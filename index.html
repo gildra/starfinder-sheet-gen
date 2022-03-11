@@ -31,6 +31,9 @@
                 width: max-content;
                 border: 2px solid #3793cc;
             }
+            .column_title {
+                font-size: 11px;
+            }
             .controlPanel {
                 margin-bottom: 50px;
             }
@@ -129,7 +132,6 @@
                 margin: auto;
             }
             #skillsWidget {
-                float: left;
                 width: 440px;
             }
             #skillsWidget thead th {
@@ -147,7 +149,34 @@
                 text-align: center;
                 margin: auto;
             }
+
+            #featsWidget input.new_feat_button {
+                width: 100px;
+            }
+            #featsWidget .newFeatBlock {
+                margin-top: 10px;
+            }
+            #featsWidget .newFeatBlock input.title {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            #featsWidget .newFeatBlock textarea.description {
+                width: 100%;
+                resize: vertical;
+                min-height: 250px;
+                margin-bottom: 20px;
+            }
+            #featsWidget .newFeatBlock .save {
+                width: 100px;
+                margin-right: 10px;
+            }
+            #featsWidget .feat p {
+                font-family: Arial, sans-serif;
+            }
+
             @media print {
+                .new_feat_button,
+                .newFeatBlock,
                 .controlPanel {
                     display: none;
                 }
@@ -186,11 +215,6 @@
                 </div>
             </div>
 
-            <div id="notesWidget" class="widget">
-                <h2 class="widgetTitle">Notes</h2>
-                <textarea v-model="sheet.notes"></textarea>
-            </div>
-
             <div id="healthWidget" class="widget">
                 <h2 class="widgetTitle">Health and Resolve</h2>
                 <table>
@@ -204,13 +228,13 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Total</td>
+                            <td class="column_title">Total</td>
                             <td><input type="text" v-model="sheet.total_stamina_points"></td>
                             <td><input type="text" v-model="sheet.total_hit_points"></td>
                             <td><input type="text" v-model="sheet.total_resolve_points"></td>
                         </tr>
                         <tr>
-                            <td>Current</td>
+                            <td class="column_title">Current</td>
                             <td><input type="text" v-model="sheet.current_stamina_points"></td>
                             <td><input type="text" v-model="sheet.current_hit_points"></td>
                             <td><input type="text" v-model="sheet.current_resolve_points"></td>
@@ -232,26 +256,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Fortitude</td>
-                            <td><input type="text" readonly v-bind:value="totalArmorClass('fortitude')"></td>
-                            <td><input type="text" v-model="sheet.sp_fortitude"></td>
-                            <td><input type="text" v-model="sheet.hp_fortitude"></td>
-                            <td><input type="text" v-model="sheet.rp_fortitude"></td>
-                        </tr>
-                        <tr>
-                            <td>Reflex</td>
-                            <td><input type="text" v-bind:value="totalArmorClass('reflex')"></td>
-                            <td><input type="text" v-model="sheet.sp_reflex"></td>
-                            <td><input type="text" v-model="sheet.hp_reflex"></td>
-                            <td><input type="text" v-model="sheet.rp_reflex"></td>
-                        </tr>
-                        <tr>
-                            <td>Will</td>
-                            <td><input type="text" v-bind:value="totalArmorClass('will')"></td>
-                            <td><input type="text" v-model="sheet.sp_will"></td>
-                            <td><input type="text" v-model="sheet.hp_will"></td>
-                            <td><input type="text" v-model="sheet.rp_will"></td>
+                        <tr v-for="ac in ['fortitude', 'reflex', 'will']">
+                            <td class="capitalize column_title">{{ ac }}</td>
+                            <td><input type="text" readonly v-bind:value="totalArmorClass(ac)"></td>
+                            <td><input type="text" v-model="sheet['sp_'+ac]"></td>
+                            <td><input type="text" v-model="sheet['hp_'+ac]"></td>
+                            <td><input type="text" v-model="sheet['rp_'+ac]"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -318,7 +328,7 @@
                     </tbody>
                 </table>
             </div>
-            <div id="skillsWidget">
+            <div id="skillsWidget" class="widget">
                 <h2 class="widgetTitle">Skills</h2>
                 <table>
                     <thead>
@@ -343,10 +353,31 @@
                     </tbody>
                 </table>
             </div>
+
+            <div id="featsWidget" class="widget">
+                <h2 class="widgetTitle">Feats</h2>
+                <input type="button" class="new_feat_button" v-bind:value="showNewFeatBlock ? 'remove' : 'add'" @click="showNewFeatBlock = !showNewFeatBlock" />
+                <div class="newFeatBlock" v-show="showNewFeatBlock">
+                    <label>Name</label>
+                    <input type="text" class="title" v-model="new_feat.title">
+                    <label>Description</label>
+                    <textarea class="description" v-model="new_feat.description"></textarea>
+                    <input type="button" class="save" value="save" @click="addFeatToSheet">
+                </div>
+
+                <div class="feat" v-for="feat in sheet.feats">
+                    <h3>{{ feat.title }}</h3>
+                    <p>{{ feat.description }}</p>
+                </div>
+            </div>
+
+            <div id="notesWidget" class="widget">
+                <h2 class="widgetTitle">Notes</h2>
+                <textarea v-model="sheet.notes"></textarea>
+            </div>
+
             <div style="clear: both;"></div>
         </div>
-
-        <div></div>
 
         <script src="https://unpkg.com/vue@3"></script>
 
@@ -356,6 +387,8 @@
                     return {
                         sheet: {},
                         file: '',
+                        showNewFeatBlock: false,
+                        new_feat: {},
                         ability_scores: [
                             'strength',
                             'dexterity',
@@ -446,6 +479,22 @@
                             };
                             reader.readAsText(this.file);
                         }
+                    },
+                    addFeatToSheet() {
+                        //this.sheet.feats.add(this.new_feat);
+                        if(!this.sheet.hasOwnProperty('feats')) {
+                            this.sheet.feats = [];
+                        }
+
+                        //this.sheet.feats.set(this.new_feat);
+                        this.sheet.feats.push({
+                            'title': this.new_feat.title,
+                            'description': this.new_feat.description
+                        });
+
+                        this.showNewFeatBlock = false;
+                        this.new_feat.title = null;
+                        this.new_feat.description = null;
                     }
                 }
             }).mount('#app');
