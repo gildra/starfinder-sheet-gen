@@ -1,0 +1,454 @@
+<html>
+    <header>
+        <title>Starfinder Sheet</title>
+        <style>
+            body {
+                font-family: "Arial Black",serif;
+                font-size: 12px;
+            }
+            td.right {
+                float: right;
+            }
+            .uppercase {
+                text-transform: uppercase;
+            }
+            .capitalize {
+                text-transform: capitalize;
+            }
+            .widget {
+                float: left;
+                width: 400px;
+                margin-right: 30px;
+                margin-bottom: 30px;
+            }
+            .widgetTitle {
+                background-color: #21557f;
+                color: #fff;
+                margin: 0 0 20px 0;
+                padding: 0 50px 0 10px;
+                font-size: 15px;
+                line-height: 35px;
+                width: max-content;
+                border: 2px solid #3793cc;
+            }
+            .controlPanel {
+                margin-bottom: 50px;
+            }
+            #characterDetailsWidget {
+                margin-bottom: 30px;
+                width: 810px;
+                font-size: 11px;
+            }
+            #characterDetailsWidget span {
+                border-bottom: 1px solid #000;
+                float: left;
+                display: block;
+                margin-right: 10px;
+                margin-bottom: 10px;
+            }
+            #characterDetailsWidget input {
+                border: 0;
+                margin-left: 10px;
+            }
+            #characterDetailsWidget span.class_level input { width: 250px; }
+            #characterDetailsWidget span.size input { width: 120px; }
+            #characterDetailsWidget span.speed input { width: 60px; }
+            #characterDetailsWidget span.gender input { width: 160px; }
+            #characterDetailsWidget span.home_world input { width: 200px; }
+            #characterDetailsWidget span.alignment input { width: 170px; }
+            #characterDetailsWidget span.deity input { width: 190px; }
+            #characterDetailsWidget span.player input { width: 250px; }
+            #characterDetailsWidget label.class_level input {
+
+            }
+
+            #notesWidget {}
+            #notesWidget textarea {
+                width: 100%;
+                min-height: 100px;
+                max-width: 400px;
+            }
+
+            #healthWidget {}
+            #healthWidget thead th {
+                font-size: 11px;
+                text-align: left;
+                vertical-align: top;
+                width: 100px;
+            }
+            #healthWidget input {
+                width: 80px;
+            }
+
+            #armorClassWidget {}
+            #armorClassWidget th {
+                font-size: 11px;
+                text-align: left;
+                vertical-align: top;
+                width: 70px;
+            }
+            #armorClassWidget input {
+                text-align: center;
+                width: 60px;
+            }
+
+            #savingThrowsWidget {}
+            #savingThrowsWidget th {
+                font-size: 11px;
+                vertical-align: top;
+            }
+            #savingThrowsWidget td {
+                font-size: 12px;
+                line-height: 25px;
+                vertical-align: middle;
+            }
+            #savingThrowsWidget input {
+                width: 60px;
+                text-align: center;
+            }
+
+            #abilityScoresWidget {
+                float: left;
+                width: 400px;
+                margin-right: 30px;
+                margin-bottom: 30px;
+            }
+            #abilityScoresWidget thead th {
+                font-size: 11px;
+                text-align: left;
+                vertical-align: top;
+            }
+            #abilityScoresWidget td {
+                font-size: 12px;
+                line-height: 25px;
+            }
+            #abilityScoresWidget input[type=text] {
+                width: 50px;
+                height: 25px;
+                text-align: center;
+                margin: auto;
+            }
+            #skillsWidget {
+                float: left;
+                width: 440px;
+            }
+            #skillsWidget thead th {
+                font-size: 11px;
+                text-align: left;
+                vertical-align: top;
+            }
+            #skillsWidget td {
+                font-size: 12px;
+                line-height: 25px;
+            }
+            #skillsWidget input[type=text] {
+                width: 50px;
+                height: 25px;
+                text-align: center;
+                margin: auto;
+            }
+            @media print {
+                .controlPanel {
+                    display: none;
+                }
+            }
+        </style>
+    </header>
+    <body>
+        <div id="app">
+            <div class="controlPanel">
+                <input type="button" value="Export import file" @click="handleFileExport">
+                <input @change="handleFileImport" type="file" ref="file">
+                <div v-if="file">File has been uploaded {{ file.name }}</div>
+                <hr />
+            </div>
+
+            <div id="characterDetailsWidget">
+                <h2 class="widgetTitle">Character Details</h2>
+                <div>
+                    <span class="class_level">Class/Level<input v-model="sheet.class_level"></span>
+                    <span class="race">Race<input v-model="sheet.race"></span>
+                    <span class="theme">Theme<input v-model="sheet.theme"></span>
+                    <div style="clear: both;"></div>
+                </div>
+                <div>
+                    <span class="size">Size<input v-model="sheet.size"></span>
+                    <span class="speed">Speed<input v-model="sheet.speed"></span>
+                    <span class="gender">Gender<input v-model="sheet.gender"></span>
+                    <span class="home_world">Home World<input v-model="sheet.home_world"></span>
+                    <div style="clear: both;"></div>
+                </div>
+                <div>
+                    <span class="alignment">Alignment<input v-model="sheet.alignment"></span>
+                    <span class="deity">Deity<input v-model="sheet.deity" type="text"></span>
+                    <span class="player">Player<input v-model="sheet.player"></span>
+                    <div style="clear: both;"></div>
+                </div>
+            </div>
+
+            <div id="notesWidget" class="widget">
+                <h2 class="widgetTitle">Notes</h2>
+                <textarea v-model="sheet.notes"></textarea>
+            </div>
+
+            <div id="healthWidget" class="widget">
+                <h2 class="widgetTitle">Health and Resolve</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Stamina Points</th>
+                            <th>Hit Points</th>
+                            <th>Resolve Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total</td>
+                            <td><input type="text" v-model="sheet.total_stamina_points"></td>
+                            <td><input type="text" v-model="sheet.total_hit_points"></td>
+                            <td><input type="text" v-model="sheet.total_resolve_points"></td>
+                        </tr>
+                        <tr>
+                            <td>Current</td>
+                            <td><input type="text" v-model="sheet.current_stamina_points"></td>
+                            <td><input type="text" v-model="sheet.current_hit_points"></td>
+                            <td><input type="text" v-model="sheet.current_resolve_points"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="armorClassWidget" class="widget">
+                <h2 class="widgetTitle">Armor Class</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Total</th>
+                            <th>Stamina Points</th>
+                            <th>Hit Points</th>
+                            <th>Resolve Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Fortitude</td>
+                            <td><input type="text" readonly v-bind:value="totalArmorClass('fortitude')"></td>
+                            <td><input type="text" v-model="sheet.sp_fortitude"></td>
+                            <td><input type="text" v-model="sheet.hp_fortitude"></td>
+                            <td><input type="text" v-model="sheet.rp_fortitude"></td>
+                        </tr>
+                        <tr>
+                            <td>Reflex</td>
+                            <td><input type="text" v-bind:value="totalArmorClass('reflex')"></td>
+                            <td><input type="text" v-model="sheet.sp_reflex"></td>
+                            <td><input type="text" v-model="sheet.hp_reflex"></td>
+                            <td><input type="text" v-model="sheet.rp_reflex"></td>
+                        </tr>
+                        <tr>
+                            <td>Will</td>
+                            <td><input type="text" v-bind:value="totalArmorClass('will')"></td>
+                            <td><input type="text" v-model="sheet.sp_will"></td>
+                            <td><input type="text" v-model="sheet.hp_will"></td>
+                            <td><input type="text" v-model="sheet.rp_will"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="savingThrowsWidget" class="widget">
+                <h2 class="widgetTitle">Saving Throws</h2>
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Total</th>
+                        <th>Base Save</th>
+                        <th>Ability Mod</th>
+                        <th>Misc Mod</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Energy Armor Class</td>
+                        <td><input type="text" v-bind:value="totalSavingThrow('eac')"></td>
+                        <td><input type="text" v-model="sheet.eac_base_save"></td>
+                        <td><input type="text" v-model="sheet.eac_abi_mod"></td>
+                        <td><input type="text" v-model="sheet.eac_misc_mod"></td>
+                    </tr>
+                    <tr>
+                        <td>Kinetic Armor Class</td>
+                        <td><input type="text" v-bind:value="totalSavingThrow('kac')"></td>
+                        <td><input type="text" v-model="sheet.kac_base_save"></td>
+                        <td><input type="text" v-model="sheet.kac_abi_mod"></td>
+                        <td><input type="text" v-model="sheet.kac_misc_mod"></td>
+                    </tr>
+                    <tr>
+                        <td>Will</td>
+                        <td><input type="text" v-bind:value="totalSavingThrow('will')"></td>
+                        <td><input type="text" v-model="sheet.will_base_save"></td>
+                        <td><input type="text" v-model="sheet.will_abi_mod"></td>
+                        <td><input type="text" v-model="sheet.will_misc_mod"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="abilityScoresWidget">
+                <h2 class="widgetTitle">Ability Scores</h2>
+                <table>
+                    <thead>
+                        <th></th>
+                        <th>Score</th>
+                        <th>Modifier</th>
+                        <th>Upgraded Score</th>
+                        <th>Upgraded Modifier</th>
+                        <th>Key</th>
+                    </thead>
+                    <tbody>
+                        <tr v-for="abi in ability_scores">
+                            <td class="uppercase" v-bind:title="capitalize(abi)">{{ abi }}</td>
+                            <td><input type="text" v-model="sheet['score_' + abi]"></td>
+                            <td><input type="text" v-model="sheet['mod_' + abi]"></td>
+                            <td><input type="text" v-model="sheet['us_' + abi]"></td>
+                            <td><input type="text" v-model="sheet['um_' + abi]"></td>
+                            <td><input type="checkbox" v-model="sheet['ab_' + abi]"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="skillsWidget">
+                <h2 class="widgetTitle">Skills</h2>
+                <table>
+                    <thead>
+                        <th style="width: 250px"></th>
+                        <th></th>
+                        <th class="total">Total</th>
+                        <th>Ranks</th>
+                        <th>Class Bonus</th>
+                        <th>Ability Mod</th>
+                        <th>Misc Mod</th>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(scaling, skill) in skills">
+                            <td class="capitalize">{{ skill }}</td>
+                            <td class="right uppercase">[{{ scaling }}]</td>
+                            <td><input type="text" readonly v-bind:value="totalAbilityScore(skill)"></td>
+                            <td><input type="text" v-model="sheet['ranks_' + skill]"></td>
+                            <td><input type="text" v-model="sheet['cb_' + skill]"></td>
+                            <td><input type="text" v-model="sheet['ab_' + skill]"></td>
+                            <td><input type="text" v-model="sheet['misc_' + skill]"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+
+        <div></div>
+
+        <script src="https://unpkg.com/vue@3"></script>
+
+        <script>
+            Vue.createApp({
+                data() {
+                    return {
+                        sheet: {},
+                        file: '',
+                        ability_scores: [
+                            'strength',
+                            'dexterity',
+                            'constitution',
+                            'intelligence',
+                            'wisdom',
+                            'charisma',
+                        ],
+                        skills: {
+                            'acrobatics': 'dex',
+                            'athletics': 'str',
+                            'bluff': 'cha',
+                            'computers': 'int',
+                            'culture': 'int',
+                            'diplomacy': 'cha',
+                            'disguise': 'cha',
+                            'engineering': 'int',
+                            'intimidate': 'cha',
+                            'life science': 'int',
+                            'medicine': 'int',
+                            'mysticism': 'wis',
+                            'perception': 'wis',
+                            'physical science': 'int',
+                            'piloting': 'dex',
+                            'sense motive': 'dex',
+                            'sleight of hands': 'dex',
+                            'stealth': 'dex',
+                            'survival': 'dex',
+                        }
+                    }
+                },
+                computed:{
+                    capitalize() {
+                        return (v) => {
+                            return v.charAt(0).toUpperCase() + v.slice(1);
+                        }
+                    },
+                    totalAbilityScore() {
+                        return (v) => {
+                            let rank = Number(this.sheet['ranks_'+v] ?? 0),
+                                cb = Number(this.sheet['cb_'+v] ?? 0),
+                                ab = Number(this.sheet['ab_'+v] ?? 0),
+                                misc = Number(this.sheet['misc_'+v] ?? 0);
+                            let total = rank + cb + ab + misc;
+                            return !isNaN(total) ? total : null;
+                        }
+                    },
+                    totalArmorClass() {
+                        return (v) => {
+                            let sp = Number(this.sheet['sp_'+v] ?? 0),
+                                hp = Number(this.sheet['hp_'+v] ?? 0),
+                                rp = Number(this.sheet['rp_'+v] ?? 0);
+                            let total = 10 + sp + hp + rp;
+                            return !isNaN(total) ? total : null;
+                        }
+                    },
+                    totalSavingThrow() {
+                        return (v) => {
+                            let base = Number(this.sheet[v+'_base_save'] ?? 0),
+                                abi = Number(this.sheet[v+'_abi_mod'] ?? 0),
+                                misc = Number(this.sheet[v+'_misc_mod'] ?? 0);
+                            let total = base + abi + misc;
+                            return !isNaN(total) ? total : null;
+                        }
+                    }
+                },
+                methods: {
+                    handleFileExport() {
+                        let data = JSON.stringify(this.sheet);
+                        let blob = new Blob([data], {type: 'text/plain'});
+
+                        let link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = "character sheet.json";
+                        link.click();
+                        URL.revokeObjectURL(link.href);
+                    },
+                    handleFileImport() {
+                        let tmpFile = this.$refs.file.files.item(0);
+                        if(!this.file || tmpFile) {
+                            this.file = tmpFile;
+                        }
+
+                        if(this.file) {
+                            let reader = new FileReader();
+                            reader.onload = (event) => {
+                                this.sheet = JSON.parse(reader.result);
+                            };
+                            reader.readAsText(this.file);
+                        }
+                    }
+                }
+            }).mount('#app');
+        </script>
+    </body>
+</html>
