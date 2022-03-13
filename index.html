@@ -285,6 +285,13 @@
                         <td><input type="text" v-model="sheet.kac_dex_mod"></td>
                         <td><input type="text" v-model="sheet.kac_misc_mod"></td>
                     </tr>
+                    <tr>
+                        <td class="column_title">AC vs combat maneuvers</td>
+                        <td><input type="text" v-bind:value="ACvsCombatManeuvers()"></td>
+                        <td>8 + KAC</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -528,6 +535,11 @@
                                 misc = Number(this.sheet[v+'_misc_mod'] ?? 0);
                             let total = 10 + ab + dex + misc;
                             return !isNaN(total) ? total : null;
+                        }
+                    },
+                    ACvsCombatManeuvers() {
+                        return (v) => {
+                            return 8 + this.totalArmorClass('kac');
                         }
                     }
                 },
