@@ -189,6 +189,19 @@
                 width: 60px;
             }
 
+            #initiativeWidget {
+                margin-bottom: 30px;
+            }
+            #initiativeWidget td {
+                font-size: 11px;
+            }
+            #initiativeWidget label {
+                display: block;
+            }
+            #initiativeWidget input {
+                width: 60px;
+            }
+
             @media print {
                 .new_feat_button,
                 .newFeatBlock,
@@ -230,18 +243,41 @@
                 </div>
             </div>
 
-            <div id="healthWidget" class="widget">
-                <h2 class="widgetTitle">Health and Resolve</h2>
-                <table>
-                    <thead>
+            <div class="widget">
+                <div id="initiativeWidget">
+                    <h2 class="widgetTitle">Initiative</h2>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <label>Total</label>
+                                    <input type="text" v-bind:value="totalInitiative()">
+                                </td>
+                                <td>
+                                    <label>Dex Mod</label>
+                                    <input type="text" v-model="sheet.dex_mod_initiative">
+                                </td>
+                                <td>
+                                    <label>Misc Mod</label>
+                                    <input type="text" v-model="sheet.misc_mod_initiative">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="healthWidget">
+                    <h2 class="widgetTitle">Health and Resolve</h2>
+                    <table>
+                        <thead>
                         <tr>
                             <th></th>
                             <th>Stamina Points</th>
                             <th>Hit Points</th>
                             <th>Resolve Points</th>
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
                         <tr>
                             <td class="column_title">Total</td>
                             <td><input type="text" v-model="sheet.total_stamina_points"></td>
@@ -254,8 +290,9 @@
                             <td><input type="text" v-model="sheet.current_hit_points"></td>
                             <td><input type="text" v-model="sheet.current_resolve_points"></td>
                         </tr>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="armorClassWidget" class="widget">
@@ -540,6 +577,11 @@
                     ACvsCombatManeuvers() {
                         return (v) => {
                             return 8 + this.totalArmorClass('kac');
+                        }
+                    },
+                    totalInitiative() {
+                        return (v) => {
+                            return Number(this.sheet.dex_mod_initiative ?? 0) + Number(this.sheet.misc_mod_initiative ?? 0);
                         }
                     }
                 },
