@@ -3,8 +3,12 @@
         <title>Starfinder Sheet</title>
         <style>
             body {
-                font-family: "Arial Black",serif;
+                font-family: "Arial",serif;
                 font-size: 12px;
+            }
+            #app {
+                max-width: 1400px;
+                margin: auto;
             }
             td.right {
                 float: right;
@@ -156,9 +160,10 @@
             #featsWidget .newFeatBlock {
                 margin-top: 10px;
             }
+            #featsWidget .newFeatBlock input.source,
             #featsWidget .newFeatBlock input.title {
                 width: 100%;
-                margin-bottom: 20px;
+                margin-bottom: 15px;
             }
             #featsWidget .newFeatBlock textarea.description {
                 width: 100%;
@@ -172,6 +177,16 @@
             }
             #featsWidget .feat p {
                 font-family: Arial, sans-serif;
+            }
+
+            #attackBonusesWidget td {
+                font-size: 11px;
+            }
+            #attackBonusesWidget td label {
+                display: block;
+            }
+            #attackBonusesWidget input {
+                width: 60px;
             }
 
             @media print {
@@ -247,22 +262,29 @@
                 <h2 class="widgetTitle">Armor Class</h2>
                 <table>
                     <thead>
-                        <tr>
-                            <th></th>
-                            <th>Total</th>
-                            <th>Stamina Points</th>
-                            <th>Hit Points</th>
-                            <th>Resolve Points</th>
-                        </tr>
+                    <tr>
+                        <th></th>
+                        <th>Total</th>
+                        <th>Armor Bonus</th>
+                        <th>Dex Mod</th>
+                        <th>Misc Mod</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="ac in ['fortitude', 'reflex', 'will']">
-                            <td class="capitalize column_title">{{ ac }}</td>
-                            <td><input type="text" readonly v-bind:value="totalArmorClass(ac)"></td>
-                            <td><input type="text" v-model="sheet['sp_'+ac]"></td>
-                            <td><input type="text" v-model="sheet['hp_'+ac]"></td>
-                            <td><input type="text" v-model="sheet['rp_'+ac]"></td>
-                        </tr>
+                    <tr>
+                        <td class="column_title">Energy Armor Class</td>
+                        <td><input type="text" v-bind:value="totalArmorClass('eac')"></td>
+                        <td><input type="text" v-model="sheet.eac_armor_bonus"></td>
+                        <td><input type="text" v-model="sheet.eac_dex_mod"></td>
+                        <td><input type="text" v-model="sheet.eac_misc_mod"></td>
+                    </tr>
+                    <tr>
+                        <td class="column_title">Kinetic Armor Class</td>
+                        <td><input type="text" v-bind:value="totalArmorClass('kac')"></td>
+                        <td><input type="text" v-model="sheet.kac_armor_bonus"></td>
+                        <td><input type="text" v-model="sheet.kac_dex_mod"></td>
+                        <td><input type="text" v-model="sheet.kac_misc_mod"></td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -275,31 +297,17 @@
                         <th></th>
                         <th>Total</th>
                         <th>Base Save</th>
-                        <th>Ability Mod</th>
+                        <th>Dex Mod</th>
                         <th>Misc Mod</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>Energy Armor Class</td>
-                        <td><input type="text" v-bind:value="totalSavingThrow('eac')"></td>
-                        <td><input type="text" v-model="sheet.eac_base_save"></td>
-                        <td><input type="text" v-model="sheet.eac_abi_mod"></td>
-                        <td><input type="text" v-model="sheet.eac_misc_mod"></td>
-                    </tr>
-                    <tr>
-                        <td>Kinetic Armor Class</td>
-                        <td><input type="text" v-bind:value="totalSavingThrow('kac')"></td>
-                        <td><input type="text" v-model="sheet.kac_base_save"></td>
-                        <td><input type="text" v-model="sheet.kac_abi_mod"></td>
-                        <td><input type="text" v-model="sheet.kac_misc_mod"></td>
-                    </tr>
-                    <tr>
-                        <td>Will</td>
-                        <td><input type="text" v-bind:value="totalSavingThrow('will')"></td>
-                        <td><input type="text" v-model="sheet.will_base_save"></td>
-                        <td><input type="text" v-model="sheet.will_abi_mod"></td>
-                        <td><input type="text" v-model="sheet.will_misc_mod"></td>
+                    <tr v-for="ac in ['fortitude', 'reflex', 'will']">
+                        <td class="capitalize column_title">{{ ac }}</td>
+                        <td><input type="text" readonly v-bind:value="totalSavingThrow(ac)"></td>
+                        <td><input type="text" v-model="sheet['base_save_'+ac]"></td>
+                        <td><input type="text" v-model="sheet['abi_mod_'+ac]"></td>
+                        <td><input type="text" v-model="sheet['misc_mod_'+ac]"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -354,12 +362,79 @@
                 </table>
             </div>
 
+            <div id="attackBonusesWidget" class="widget">
+                <h2 class="widgetTitle">Attack Bonuses</h2>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td style="width: 250px;">Melee Attack</td>
+                        <td>
+                            <label>Total</label>
+                            <input type="text">
+                        </td>
+                        <td>
+                            <label>BAB</label>
+                            <input type="text" v-model="sheet.bab_melee_attack">
+                        </td>
+                        <td>
+                            <label>STR Mod</label>
+                            <input type="text" v-model="sheet.abi_mod_melee_attack">
+                        </td>
+                        <td>
+                            <label>Misc Mod</label>
+                            <input type="text" v-model="sheet.misc_mod_melee_attack">
+                        </td>
+                    </tr>
+                        <tr>
+                            <td>Ranged Attack</td>
+                            <td>
+                                <label>Total</label>
+                                <input type="text">
+                            </td>
+                            <td>
+                                <label>BAB</label>
+                                <input type="text" v-model="sheet.bab_ranged_attack">
+                            </td>
+                            <td>
+                                <label>DEX Mod</label>
+                                <input type="text" v-model="sheet.abi_mod_ranged_attack">
+                            </td>
+                            <td>
+                                <label>Misc Mod</label>
+                                <input type="text" v-model=sheet.misc_mod_ranged_attack">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Thrown Attack</td>
+                            <td>
+                                <label>Total</label>
+                                <input type="text">
+                            </td>
+                            <td>
+                                <label>BAB</label>
+                                <input type="text" v-model="sheet.bab_thrown_attack">
+                            </td>
+                            <td>
+                                <label>STR Mod</label>
+                                <input type="text" v-model="sheet.abi_mod_thrown_attack">
+                            </td>
+                            <td>
+                                <label>Misc Mod</label>
+                                <input type="text" v-model="sheet.misc_mod_thrown_attack">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div id="featsWidget" class="widget">
                 <h2 class="widgetTitle">Feats</h2>
                 <input type="button" class="new_feat_button" v-bind:value="showNewFeatBlock ? 'remove' : 'add'" @click="showNewFeatBlock = !showNewFeatBlock" />
                 <div class="newFeatBlock" v-show="showNewFeatBlock">
                     <label>Name</label>
                     <input type="text" class="title" v-model="new_feat.title">
+                    <label>Source</label>
+                    <input type="text" class="source" v-model="new_feat.source">
                     <label>Description</label>
                     <textarea class="description" v-model="new_feat.description"></textarea>
                     <input type="button" class="save" value="save" @click="addFeatToSheet">
@@ -367,6 +442,7 @@
 
                 <div class="feat" v-for="feat in sheet.feats">
                     <h3>{{ feat.title }}</h3>
+                    <span v-if="feat.source">{{ feat.source }}</span>
                     <p>{{ feat.description }}</p>
                 </div>
             </div>
@@ -436,21 +512,21 @@
                             return !isNaN(total) ? total : null;
                         }
                     },
-                    totalArmorClass() {
+                    totalSavingThrow() {
                         return (v) => {
-                            let sp = Number(this.sheet['sp_'+v] ?? 0),
-                                hp = Number(this.sheet['hp_'+v] ?? 0),
-                                rp = Number(this.sheet['rp_'+v] ?? 0);
+                            let sp = Number(this.sheet['base_save_'+v] ?? 0),
+                                hp = Number(this.sheet['abi_mod_'+v] ?? 0),
+                                rp = Number(this.sheet['misc_mod_'+v] ?? 0);
                             let total = 10 + sp + hp + rp;
                             return !isNaN(total) ? total : null;
                         }
                     },
-                    totalSavingThrow() {
+                    totalArmorClass() {
                         return (v) => {
-                            let base = Number(this.sheet[v+'_base_save'] ?? 0),
-                                abi = Number(this.sheet[v+'_abi_mod'] ?? 0),
+                            let ab = Number(this.sheet[v+'_armor_bonus'] ?? 0),
+                                dex = Number(this.sheet[v+'_dex_mod'] ?? 0),
                                 misc = Number(this.sheet[v+'_misc_mod'] ?? 0);
-                            let total = base + abi + misc;
+                            let total = 10 + ab + dex + misc;
                             return !isNaN(total) ? total : null;
                         }
                     }
@@ -489,12 +565,12 @@
                         //this.sheet.feats.set(this.new_feat);
                         this.sheet.feats.push({
                             'title': this.new_feat.title,
+                            'source': this.new_feat.source,
                             'description': this.new_feat.description
                         });
 
                         this.showNewFeatBlock = false;
-                        this.new_feat.title = null;
-                        this.new_feat.description = null;
+                        this.new_feat = [];
                     }
                 }
             }).mount('#app');
