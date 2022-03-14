@@ -414,7 +414,7 @@
                         <td style="width: 250px;">Melee Attack</td>
                         <td>
                             <label>Total</label>
-                            <input type="text">
+                            <input type="text" readonly v-bind:value="totalAttackBonus('melee_attack')">
                         </td>
                         <td>
                             <label>BAB</label>
@@ -433,7 +433,7 @@
                             <td>Ranged Attack</td>
                             <td>
                                 <label>Total</label>
-                                <input type="text">
+                                <input type="text" readonly v-bind:value="totalAttackBonus('ranged_attack')">
                             </td>
                             <td>
                                 <label>BAB</label>
@@ -445,14 +445,14 @@
                             </td>
                             <td>
                                 <label>Misc Mod</label>
-                                <input type="text" v-model=sheet.misc_mod_ranged_attack">
+                                <input type="text" v-model="sheet.misc_mod_ranged_attack">
                             </td>
                         </tr>
                         <tr>
                             <td>Thrown Attack</td>
                             <td>
                                 <label>Total</label>
-                                <input type="text">
+                                <input type="text" readonly v-bind:value="totalAttackBonus('thrown_attack')">
                             </td>
                             <td>
                                 <label>BAB</label>
@@ -582,6 +582,11 @@
                     totalInitiative() {
                         return (v) => {
                             return Number(this.sheet.dex_mod_initiative ?? 0) + Number(this.sheet.misc_mod_initiative ?? 0);
+                        }
+                    },
+                    totalAttackBonus() {
+                        return (v) => {
+                            return Number(this.sheet['bab_'+v] ?? 0) + Number(this.sheet['abi_mod_'+v] ?? 0) + Number(this.sheet['misc_mod_'+v] ?? 0);
                         }
                     }
                 },
