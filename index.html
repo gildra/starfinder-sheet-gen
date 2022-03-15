@@ -19,6 +19,9 @@
             .capitalize {
                 text-transform: capitalize;
             }
+            .center {
+                text-align: center;
+            }
             .widget {
                 float: left;
                 width: 400px;
@@ -202,8 +205,37 @@
                 width: 60px;
             }
 
+            #equipmentWidget table.equipmentList td {
+                border-bottom: 1px solid #000;
+            }
+            #equipmentWidget .newEquipmentBlock {
+                margin-top: 10px;
+            }
+            #equipmentWidget .new_equipment_button {
+                width: 100px;
+            }
+            #equipmentWidget .newEquipmentBlock label {
+                width: 30%;
+                float: left;
+            }
+            #equipmentWidget .newEquipmentBlock input {
+                width: 50px;
+                text-align: center;
+            }
+            #equipmentWidget .newEquipmentBlock input.name {
+                width: 100%;
+                margin-bottom: 15px;
+                text-align: left;
+            }
+            #equipmentWidget .newEquipmentBlock input.save {
+                width: 100px;
+                float: right;
+            }
+
             @media print {
                 .new_feat_button,
+                .new_equipment_button,
+                .newEquipmentBlock,
                 .newFeatBlock,
                 .controlPanel {
                     display: none;
@@ -411,7 +443,7 @@
                 <table>
                     <tbody>
                     <tr>
-                        <td style="width: 250px;">Melee Attack</td>
+                        <td style="width: 150px;">Melee Attack</td>
                         <td>
                             <label>Total</label>
                             <input type="text" readonly v-bind:value="totalAttackBonus('melee_attack')">
@@ -491,6 +523,32 @@
                 </div>
             </div>
 
+            <div id="equipmentWidget" class="widget">
+                <h2 class="widgetTitle">Equipment</h2>
+                <input type="button" class="new_equipment_button" v-bind:value="showNewEquipmentBlock ? 'remove' : 'add'" @click="showNewEquipmentBlock = !showNewEquipmentBlock" />
+                <div v-show="showNewEquipmentBlock" class="newEquipmentBlock">
+                    <label>Name</label>
+                    <input type="text" class="name" v-model="new_equipment.name">
+                    <label>level <input type="text" v-model="new_equipment.level"></label>
+                    <label>Bulk <input type="text" v-model="new_equipment.bulk"></label>
+                    <input type="button" class="save" value="save" @click="addEquipmentToSheet">
+                    <div style="clear: both;"></div>
+                </div>
+
+                <table class="equipmentList" v-if="sheet.equipment">
+                    <tr>
+                        <td style="width: 300px;">Name</td>
+                        <td>Level</td>
+                        <td>Bulk</td>
+                    </tr>
+                    <tr class="equipment" v-for="equipment in sheet.equipment">
+                        <td>{{ equipment.name }}</td>
+                        <td class="center">{{ equipment.level }}</td>
+                        <td class="center">{{ equipment.bulk }}</td>
+                    </tr>
+                </table>
+            </div>
+
             <div id="notesWidget" class="widget">
                 <h2 class="widgetTitle">Notes</h2>
                 <textarea v-model="sheet.notes"></textarea>
@@ -508,7 +566,9 @@
                         sheet: {},
                         file: '',
                         showNewFeatBlock: false,
+                        showNewEquipmentBlock: false,
                         new_feat: {},
+                        new_equipment: {},
                         ability_scores: [
                             'strength',
                             'dexterity',
@@ -616,12 +676,10 @@
                         }
                     },
                     addFeatToSheet() {
-                        //this.sheet.feats.add(this.new_feat);
                         if(!this.sheet.hasOwnProperty('feats')) {
                             this.sheet.feats = [];
                         }
 
-                        //this.sheet.feats.set(this.new_feat);
                         this.sheet.feats.push({
                             'title': this.new_feat.title,
                             'source': this.new_feat.source,
@@ -630,6 +688,20 @@
 
                         this.showNewFeatBlock = false;
                         this.new_feat = [];
+                    },
+                    addEquipmentToSheet() {
+                        if(!this.sheet.hasOwnProperty('equipment')) {
+                            this.sheet.equipment = [];
+                        }
+
+                        this.sheet.equipment.push({
+                            'name': this.new_equipment.name,
+                            'level': this.new_equipment.level,
+                            'bulk': this.new_equipment.bulk
+                        });
+
+                        this.showNewEquipmentBlock = false;
+                        this.new_equipment = [];
                     }
                 }
             }).mount('#app');
