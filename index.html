@@ -1,6 +1,9 @@
 <html>
     <header>
         <title>Starfinder Sheet</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css"
+              integrity="sha512-10/jx2EXwxxWqCLX/hHth/vu2KY3jCF70dCQB8TSgNjbCVAC/8vai53GfMDrO2Emgwccf2pJqxct9ehpzG+MTw=="
+              crossorigin="anonymous" referrerpolicy="no-referrer" />
         <style>
             body {
                 font-family: "Arial",serif;
@@ -43,6 +46,12 @@
             }
             .controlPanel {
                 margin-bottom: 50px;
+            }
+            button.delete,
+            button.edit {
+                background-color: transparent;
+                border: 0;
+                cursor: pointer;
             }
             #characterDetailsWidget {
                 margin-bottom: 30px;
@@ -208,6 +217,10 @@
             #equipmentWidget table.equipmentList td {
                 border-bottom: 1px solid #000;
             }
+            #equipmentWidget table.equipmentList td input {
+                width: 100%;
+                border:0;
+            }
             #equipmentWidget .newEquipmentBlock {
                 margin-top: 10px;
             }
@@ -227,12 +240,13 @@
                 margin-bottom: 15px;
                 text-align: left;
             }
-            #equipmentWidget .newEquipmentBlock input.save {
+            #equipmentWidget .newEquipmentBlock button.save {
                 width: 100px;
                 float: right;
             }
 
             @media print {
+                .hideOnPrint,
                 .new_feat_button,
                 .new_equipment_button,
                 .newEquipmentBlock,
@@ -531,20 +545,22 @@
                     <input type="text" class="name" v-model="new_equipment.name">
                     <label>level <input type="text" v-model="new_equipment.level"></label>
                     <label>Bulk <input type="text" v-model="new_equipment.bulk"></label>
-                    <input type="button" class="save" value="save" @click="addEquipmentToSheet">
+                    <button class="save" @click="addEquipmentToSheet">save</button>
                     <div style="clear: both;"></div>
                 </div>
 
-                <table class="equipmentList" v-if="sheet.equipment">
+                <table class="equipmentList" v-if="sheet.equipment !== undefined && sheet.equipment.length">
                     <tr>
                         <td style="width: 300px;">Name</td>
-                        <td>Level</td>
-                        <td>Bulk</td>
+                        <td class="center">Level</td>
+                        <td class="center">Bulk</td>
+                        <td class="hideOnPrint"></td>
                     </tr>
-                    <tr class="equipment" v-for="equipment in sheet.equipment">
-                        <td>{{ equipment.name }}</td>
-                        <td class="center">{{ equipment.level }}</td>
-                        <td class="center">{{ equipment.bulk }}</td>
+                    <tr class="equipment" v-for="(equipment, index) in sheet.equipment">
+                        <td><input v-model="equipment.name"></td>
+                        <td><input class="center" v-model="equipment.level"></td>
+                        <td><input class="center" v-model="equipment.bulk"></td>
+                        <td class="hideOnPrint"><button class="delete" @click="deleteItem('equipment', index)"><span class="fa-solid fa-trash-can"></span></button></td>
                     </tr>
                 </table>
             </div>
@@ -702,6 +718,9 @@
 
                         this.showNewEquipmentBlock = false;
                         this.new_equipment = [];
+                    },
+                    deleteItem(list, index) {
+                        this.sheet[list].splice(index, 1);
                     }
                 }
             }).mount('#app');
