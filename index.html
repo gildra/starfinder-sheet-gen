@@ -10,7 +10,7 @@
                 font-size: 12px;
             }
             #app {
-                max-width: 1400px;
+                max-width: 1300px;
                 margin: auto;
             }
             td.right {
@@ -99,7 +99,9 @@
                 width: 80px;
             }
 
-            #armorClassWidget {}
+            #armorClassWidget {
+                margin-bottom: 30px;
+            }
             #armorClassWidget th {
                 font-size: 11px;
                 text-align: left;
@@ -148,7 +150,7 @@
                 margin: auto;
             }
             #skillsWidget {
-                width: 440px;
+                width: 400px;
             }
             #skillsWidget thead th {
                 font-size: 11px;
@@ -160,7 +162,7 @@
                 line-height: 25px;
             }
             #skillsWidget input[type=text] {
-                width: 50px;
+                width: 45px;
                 height: 25px;
                 text-align: center;
                 margin: auto;
@@ -254,6 +256,19 @@
                 .controlPanel {
                     display: none;
                 }
+
+                .widget {
+                    margin-bottom: 20px;
+                    margin-right: 15px;
+                }
+                .widgetTitle {
+                    font-size: 13px;
+                    line-height: 25px;
+                    border: 1px solid #3793cc;
+                }
+
+                #skillsWidget {}
+                #abilityScoresWidget {}
             }
         </style>
     </header>
@@ -287,6 +302,30 @@
                     <span class="player">Player<input v-model="sheet.player"></span>
                     <div style="clear: both;"></div>
                 </div>
+            </div>
+
+            <div id="abilityScoresWidget">
+                <h2 class="widgetTitle">Ability Scores</h2>
+                <table>
+                    <thead>
+                    <th style="width: 150px;"></th>
+                    <th>Score</th>
+                    <th>Modifier</th>
+                    <th>Upgraded Score</th>
+                    <th>Upgraded Modifier</th>
+                    <th>Key</th>
+                    </thead>
+                    <tbody>
+                    <tr v-for="abi in ability_scores">
+                        <td class="uppercase" v-bind:title="capitalize(abi)">{{ abi }}</td>
+                        <td><input type="text" v-model="sheet['score_' + abi]"></td>
+                        <td><input type="text" v-model="sheet['mod_' + abi]"></td>
+                        <td><input type="text" v-model="sheet['us_' + abi]"></td>
+                        <td><input type="text" v-model="sheet['um_' + abi]"></td>
+                        <td><input type="checkbox" v-model="sheet['ab_' + abi]"></td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="widget">
@@ -341,91 +380,70 @@
                 </div>
             </div>
 
-            <div id="armorClassWidget" class="widget">
-                <h2 class="widgetTitle">Armor Class</h2>
-                <table>
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>Total</th>
-                        <th>Armor Bonus</th>
-                        <th>Dex Mod</th>
-                        <th>Misc Mod</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td class="column_title">Energy Armor Class</td>
-                        <td><input type="text" v-bind:value="totalArmorClass('eac')"></td>
-                        <td><input type="text" v-model="sheet.eac_armor_bonus"></td>
-                        <td><input type="text" v-model="sheet.eac_dex_mod"></td>
-                        <td><input type="text" v-model="sheet.eac_misc_mod"></td>
-                    </tr>
-                    <tr>
-                        <td class="column_title">Kinetic Armor Class</td>
-                        <td><input type="text" v-bind:value="totalArmorClass('kac')"></td>
-                        <td><input type="text" v-model="sheet.kac_armor_bonus"></td>
-                        <td><input type="text" v-model="sheet.kac_dex_mod"></td>
-                        <td><input type="text" v-model="sheet.kac_misc_mod"></td>
-                    </tr>
-                    <tr>
-                        <td class="column_title">AC vs combat maneuvers</td>
-                        <td><input type="text" v-bind:value="ACvsCombatManeuvers()"></td>
-                        <td>8 + KAC</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="savingThrowsWidget" class="widget">
-                <h2 class="widgetTitle">Saving Throws</h2>
-                <table>
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>Total</th>
-                        <th>Base Save</th>
-                        <th>Dex Mod</th>
-                        <th>Misc Mod</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="ac in ['fortitude', 'reflex', 'will']">
-                        <td class="capitalize column_title">{{ ac }}</td>
-                        <td><input type="text" readonly v-bind:value="totalSavingThrow(ac)"></td>
-                        <td><input type="text" v-model="sheet['base_save_'+ac]"></td>
-                        <td><input type="text" v-model="sheet['abi_mod_'+ac]"></td>
-                        <td><input type="text" v-model="sheet['misc_mod_'+ac]"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="abilityScoresWidget">
-                <h2 class="widgetTitle">Ability Scores</h2>
-                <table>
-                    <thead>
-                        <th></th>
-                        <th>Score</th>
-                        <th>Modifier</th>
-                        <th>Upgraded Score</th>
-                        <th>Upgraded Modifier</th>
-                        <th>Key</th>
-                    </thead>
-                    <tbody>
-                        <tr v-for="abi in ability_scores">
-                            <td class="uppercase" v-bind:title="capitalize(abi)">{{ abi }}</td>
-                            <td><input type="text" v-model="sheet['score_' + abi]"></td>
-                            <td><input type="text" v-model="sheet['mod_' + abi]"></td>
-                            <td><input type="text" v-model="sheet['us_' + abi]"></td>
-                            <td><input type="text" v-model="sheet['um_' + abi]"></td>
-                            <td><input type="checkbox" v-model="sheet['ab_' + abi]"></td>
+            <div class="widget">
+                <div id="armorClassWidget">
+                    <h2 class="widgetTitle">Armor Class</h2>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Total</th>
+                            <th>Armor Bonus</th>
+                            <th>Dex Mod</th>
+                            <th>Misc Mod</th>
                         </tr>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="column_title">Energy Armor Class</td>
+                            <td><input type="text" v-bind:value="totalArmorClass('eac')"></td>
+                            <td><input type="text" v-model="sheet.eac_armor_bonus"></td>
+                            <td><input type="text" v-model="sheet.eac_dex_mod"></td>
+                            <td><input type="text" v-model="sheet.eac_misc_mod"></td>
+                        </tr>
+                        <tr>
+                            <td class="column_title">Kinetic Armor Class</td>
+                            <td><input type="text" v-bind:value="totalArmorClass('kac')"></td>
+                            <td><input type="text" v-model="sheet.kac_armor_bonus"></td>
+                            <td><input type="text" v-model="sheet.kac_dex_mod"></td>
+                            <td><input type="text" v-model="sheet.kac_misc_mod"></td>
+                        </tr>
+                        <tr>
+                            <td class="column_title">AC vs combat maneuvers</td>
+                            <td><input type="text" v-bind:value="ACvsCombatManeuvers()"></td>
+                            <td>8 + KAC</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="savingThrowsWidget" class="widget">
+                    <h2 class="widgetTitle">Saving Throws</h2>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Total</th>
+                            <th>Base Save</th>
+                            <th>Dex Mod</th>
+                            <th>Misc Mod</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="ac in ['fortitude', 'reflex', 'will']">
+                            <td class="capitalize column_title">{{ ac }}</td>
+                            <td><input type="text" readonly v-bind:value="totalSavingThrow(ac)"></td>
+                            <td><input type="text" v-model="sheet['base_save_'+ac]"></td>
+                            <td><input type="text" v-model="sheet['abi_mod_'+ac]"></td>
+                            <td><input type="text" v-model="sheet['misc_mod_'+ac]"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
             <div id="skillsWidget" class="widget">
                 <h2 class="widgetTitle">Skills</h2>
                 <table>
