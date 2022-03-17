@@ -16,15 +16,10 @@
             td.right {
                 float: right;
             }
-            .uppercase {
-                text-transform: uppercase;
-            }
-            .capitalize {
-                text-transform: capitalize;
-            }
-            .center {
-                text-align: center;
-            }
+            .uppercase { text-transform: uppercase; }
+            .capitalize { text-transform: capitalize; }
+            .center { text-align: center; }
+            .hide { display: none; }
             .widget {
                 float: left;
                 width: 400px;
@@ -86,6 +81,7 @@
                 width: 100%;
                 min-height: 100px;
                 max-width: 400px;
+                resize: vertical;
             }
 
             #healthWidget {}
@@ -168,8 +164,13 @@
                 margin: auto;
             }
 
-            #featsWidget input.new_feat_button {
-                width: 100px;
+            #featsWidget {
+                position: relative;
+            }
+            #featsWidget .new_feat_button {
+                position: absolute;
+                top: 0;
+                right: 0;
             }
             #featsWidget .newFeatBlock {
                 margin-top: 10px;
@@ -189,8 +190,33 @@
                 width: 100px;
                 margin-right: 10px;
             }
-            #featsWidget .feat p {
-                font-family: Arial, sans-serif;
+            #featsWidget .feat .readonly {
+                position: relative;
+            }
+            #featsWidget .feat .readonly button.edit {
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+            #featsWidget .feat input.title,
+            #featsWidget .feat input.source {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            #featsWidget .feat textarea.description {
+                min-height: 150px;
+                width: 100%;
+                resize: vertical;
+            }
+            .feat button.save {
+                margin-top: 10px;
+                float: right;
+                width: 100px;
+            }
+            .feat input.delete {
+                margin-top: 10px;
+                float: right;
+                width: 100px;
             }
 
             #attackBonusesWidget td {
@@ -586,7 +612,7 @@
 
             <div id="featsWidget" class="widget">
                 <h2 class="widgetTitle">Feats</h2>
-                <input type="button" class="new_feat_button" v-bind:value="showNewFeatBlock ? 'remove' : 'add'" @click="showNewFeatBlock = !showNewFeatBlock" />
+                <button class="new_feat_button" @click="showNewFeatBlock = !showNewFeatBlock"><span class="fa fa-plus"></span></button>
                 <div class="newFeatBlock" v-show="showNewFeatBlock">
                     <label>Name</label>
                     <input type="text" class="title" v-model="new_feat.title">
@@ -597,10 +623,24 @@
                     <input type="button" class="save" value="save" @click="addFeatToSheet">
                 </div>
 
-                <div class="feat" v-for="feat in sheet.feats">
-                    <h3>{{ feat.title }}</h3>
-                    <span v-if="feat.source">{{ feat.source }}</span>
-                    <p>{{ feat.description }}</p>
+                <div class="feat" v-for="(feat, index) in sheet.feats">
+                    <div class="readonly"  :class="{ hide: opened.includes(index) }">
+                        <h3>{{ feat.title }}</h3>
+                        <span v-if="feat.source">{{ feat.source }}</span>
+                        <p>{{ feat.description }}</p>
+                        <button class="edit hideOnPrint" @click="toggle(index)"><span class="fa fa-cog"></span></button>
+                    </div>
+                    <div class="hideOnPrint" v-if="opened.includes(index)">
+                        <label>Feat</label>
+                        <input class="title" v-model="feat.title">
+                        <label>Source</label>
+                        <input class="source" v-model="feat.source">
+                        <label>Description</label>
+                        <textarea class="description" v-model="feat.description"></textarea>
+                        <button class="save" @click="toggle(index)">save</button>
+                        <input type="button" value="remove" class="delete" @click="deleteItem('feats', index)" />
+                        <div style="clear: both;"></div>
+                    </div>
                 </div>
             </div>
 
@@ -646,8 +686,9 @@
             Vue.createApp({
                 data() {
                     return {
-                        sheet: {},
                         file: '',
+                        sheet: {},
+                        opened: [],
                         showNewFeatBlock: false,
                         showNewEquipmentBlock: false,
                         new_feat: {},
@@ -757,6 +798,14 @@
                                 this.sheet = JSON.parse(reader.result);
                             };
                             reader.readAsText(this.file);
+                        }
+                    },
+                    toggle(id) {
+                        const index = this.opened.indexOf(id);
+                        if (index > -1) {
+                            this.opened.splice(index, 1)
+                        } else {
+                            this.opened.push(id)
                         }
                     },
                     addFeatToSheet() {
