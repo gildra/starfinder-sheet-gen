@@ -247,6 +247,15 @@
                 float: right;
             }
 
+            #weaponsWidget th {
+                text-align: left;
+                font-weight: normal;
+                font-size: 11px;
+            }
+            #weaponsWidget table input {
+                width: 100%;
+            }
+
             @media print {
                 .hideOnPrint,
                 .new_feat_button,
@@ -470,6 +479,39 @@
                 </table>
             </div>
 
+            <div id="weaponsWidget" class="widget">
+                <h2 class="widgetTitle">Weapons</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 150px;">Name</th>
+                            <th>Attack</th>
+                            <th>Damage</th>
+                            <th>Type</th>
+                            <th class="hideOnPrint"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="attack in sheet.attacks">
+                            <td><input v-model="attack.name"></td>
+                            <td><input v-model="attack.attack_bonus"></td>
+                            <td><input v-model="attack.damage"></td>
+                            <td><input v-model="attack.type"></td>
+                            <td class="hideOnPrint"><button class="delete" @click="deleteItem('attacks', index)"><span class="fa-solid fa-trash-can"></span></button></td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="hideOnPrint">
+                        <tr>
+                            <td><input v-model="new_attack.name"></td>
+                            <td><input v-model="new_attack.attack_bonus"></td>
+                            <td><input v-model="new_attack.damage"></td>
+                            <td><input v-model="new_attack.type"></td>
+                            <td><button class="save" @click="addAttackToSheet"><span class="fa fa-plus"></span></button></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
             <div id="attackBonusesWidget" class="widget">
                 <h2 class="widgetTitle">Attack Bonuses</h2>
                 <table>
@@ -603,6 +645,7 @@
                         showNewEquipmentBlock: false,
                         new_feat: {},
                         new_equipment: {},
+                        new_attack: {},
                         ability_scores: [
                             'strength',
                             'dexterity',
@@ -722,6 +765,20 @@
 
                         this.showNewFeatBlock = false;
                         this.new_feat = [];
+                    },
+                    addAttackToSheet() {
+                        if(!this.sheet.hasOwnProperty('attacks')) {
+                            this.sheet.attacks = [];
+                        }
+
+                        this.sheet.attacks.push({
+                            'name': this.new_attack.name,
+                            'attack_bonus': this.new_attack.attack_bonus,
+                            'damage': this.new_attack.damage,
+                            'type': this.new_attack.type
+                        });
+
+                        this.new_attack = [];
                     },
                     addEquipmentToSheet() {
                         if(!this.sheet.hasOwnProperty('equipment')) {
