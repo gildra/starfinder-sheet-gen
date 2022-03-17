@@ -257,6 +257,12 @@
             }
 
             @media print {
+
+                .pagebreak {
+                    clear: both;
+                    page-break-before: always;
+                }
+
                 .hideOnPrint,
                 .new_feat_button,
                 .new_equipment_button,
@@ -453,6 +459,7 @@
                 </div>
             </div>
 
+            <div class="pagebreak"></div>
             <div id="skillsWidget" class="widget">
                 <h2 class="widgetTitle">Skills</h2>
                 <table>
