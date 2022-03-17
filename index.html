@@ -500,13 +500,13 @@
                             <td class="hideOnPrint"><button class="delete" @click="deleteItem('attacks', index)"><span class="fa-solid fa-trash-can"></span></button></td>
                         </tr>
                     </tbody>
-                    <tfoot class="hideOnPrint">
+                    <tfoot v-bind:class="sheet.attacks ? 'hideOnPrint' : ''">
                         <tr>
                             <td><input v-model="new_attack.name"></td>
                             <td><input v-model="new_attack.attack_bonus"></td>
                             <td><input v-model="new_attack.damage"></td>
                             <td><input v-model="new_attack.type"></td>
-                            <td><button class="save" @click="addAttackToSheet"><span class="fa fa-plus"></span></button></td>
+                            <td class="hideOnPrint"><button class="save" @click="addAttackToSheet"><span class="fa fa-plus"></span></button></td>
                         </tr>
                     </tfoot>
                 </table>
