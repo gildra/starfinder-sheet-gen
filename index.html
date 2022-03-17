@@ -167,6 +167,9 @@
             #featsWidget {
                 position: relative;
             }
+            #featsWidget p {
+                white-space: pre-wrap;
+            }
             #featsWidget .new_feat_button {
                 position: absolute;
                 top: 0;
@@ -627,7 +630,7 @@
                     <div class="readonly"  :class="{ hide: opened.includes(index) }">
                         <h3>{{ feat.title }}</h3>
                         <span v-if="feat.source">{{ feat.source }}</span>
-                        <p>{{ feat.description }}</p>
+                        <p v-html="feat.description"></p>
                         <button class="edit hideOnPrint" @click="toggle(index)"><span class="fa fa-cog"></span></button>
                     </div>
                     <div class="hideOnPrint" v-if="opened.includes(index)">
