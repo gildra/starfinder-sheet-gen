@@ -245,18 +245,23 @@
                 width: 60px;
             }
 
+            #equipmentWidget .equipment.readonly {
+                display: none;
+            }
             #equipmentWidget table.equipmentList td {
                 border-bottom: 1px solid #000;
+                height: 20px;
             }
             #equipmentWidget table.equipmentList td input {
                 width: 100%;
                 border:0;
             }
             #equipmentWidget .newEquipmentBlock {
-                margin-top: 10px;
+                margin-bottom: 20px;
             }
             #equipmentWidget .new_equipment_button {
                 width: 100px;
+                margin-bottom: 20px;
             }
             #equipmentWidget .newEquipmentBlock label {
                 width: 30%;
@@ -313,6 +318,7 @@
 
                 #skillsWidget {}
                 #abilityScoresWidget {}
+                #equipmentWidget .equipment.readonly { display: table-row; }
             }
         </style>
     </header>
@@ -659,18 +665,24 @@
                     <div style="clear: both;"></div>
                 </div>
 
-                <table class="equipmentList" v-if="sheet.equipment !== undefined && sheet.equipment.length">
+                <table class="equipmentList">
                     <tr>
                         <td style="width: 300px;">Name</td>
                         <td class="center">Level</td>
                         <td class="center">Bulk</td>
-                        <td class="hideOnPrint"></td>
+                        <td v-if="sheet.equipment !== undefined && sheet.equipment.length" class="hideOnPrint"></td>
                     </tr>
                     <tr class="equipment" v-for="(equipment, index) in sheet.equipment">
                         <td><input v-model="equipment.name"></td>
                         <td><input class="center" v-model="equipment.level"></td>
                         <td><input class="center" v-model="equipment.bulk"></td>
                         <td class="hideOnPrint"><button class="delete" @click="deleteItem('equipment', index)"><span class="fa-solid fa-trash-can"></span></button></td>
+                    </tr>
+                    <tr class="readonly equipment" v-for="n in 10">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td v-if="sheet.equipment !== undefined && sheet.equipment.length"></td>
                     </tr>
                 </table>
             </div>
