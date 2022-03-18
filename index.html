@@ -319,10 +319,42 @@
                 float: right;
             }
 
-            #weaponsWidget th {
-                text-align: left;
-                font-weight: normal;
-                font-size: 11px;
+            #weaponsWidget {
+                position: relative;
+            }
+            #weaponsWidget button.save {
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+            #weaponsWidget .weapon {
+                padding-top: 10px;
+                border-top: 1px solid #000;
+                position: relative;
+                margin-bottom: 30px;
+            }
+            #weaponsWidget .weapon button.delete {
+                position: absolute;
+                top: -20px;
+                right: 0;
+            }
+            #weaponsWidget .weapon .divider {
+                margin-bottom: 5px;
+            }
+            #weaponsWidget .weapon label {
+                float: left;
+                width: 25%;
+            }
+            #weaponsWidget .weapon label.name {
+                width: 50%;
+            }
+            #weaponsWidget .weapon label span {
+                padding-right: 5px;
+                display: block;
+                text-align: right;
+            }
+            #weaponsWidget .weapon label input {
+                width: 100%;
             }
             #weaponsWidget table input {
                 width: 100%;
@@ -561,35 +593,46 @@
 
             <div id="weaponsWidget" class="widget">
                 <h2 class="widgetTitle">Weapons</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 150px;">Name</th>
-                            <th>Attack</th>
-                            <th>Damage</th>
-                            <th>Type</th>
-                            <th class="hideOnPrint"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="attack in sheet.attacks">
-                            <td><input v-model="attack.name"></td>
-                            <td><input v-model="attack.attack_bonus"></td>
-                            <td><input v-model="attack.damage"></td>
-                            <td><input v-model="attack.type"></td>
-                            <td class="hideOnPrint"><button class="delete" @click="deleteItem('attacks', index)"><span class="fa-solid fa-trash-can"></span></button></td>
-                        </tr>
-                    </tbody>
-                    <tfoot v-bind:class="sheet.attacks ? 'hideOnPrint' : ''">
-                        <tr>
-                            <td><input v-model="new_attack.name"></td>
-                            <td><input v-model="new_attack.attack_bonus"></td>
-                            <td><input v-model="new_attack.damage"></td>
-                            <td><input v-model="new_attack.type"></td>
-                            <td class="hideOnPrint"><button class="save" @click="addAttackToSheet"><span class="fa fa-plus"></span></button></td>
-                        </tr>
-                    </tfoot>
-                </table>
+                <button class="save hideOnPrint" @click="addAttackToSheet"><span class="fa fa-plus"></span></button>
+                <template v-for="weapon in sheet.attacks">
+                    <div class="weapon">
+                        <button class="delete hideOnPrint" @click="deleteItem('attacks', index)"><span class="fa-solid fa-trash-can"></span></button>
+                        <div class="divider">
+                            <label class="name">
+                                <input v-model="weapon.name">
+                                <span>Weapon</span>
+                            </label>
+                            <label>
+                                <input v-model="weapon.attack_bonus">
+                                <span>Attack Bonus</span>
+                            </label>
+                            <label>
+                                <input v-model="weapon.damage">
+                                <span>Damage</span>
+                            </label>
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            <label>
+                                <input v-model="weapon.type">
+                                <span>Type</span>
+                            </label>
+                            <label>
+                                <input v-model="weapon.range">
+                                <span>Range</span>
+                            </label>
+                            <label>
+                                <input v-model="weapon.ammo_usage">
+                                <span>Ammo/Usage</span>
+                            </label>
+                            <label>
+                                <input v-model="weapon.special">
+                                <span>Special</span>
+                            </label>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                </template>
             </div>
 
             <div id="attackBonusesWidget" class="widget">
@@ -757,7 +800,6 @@
                         showNewEquipmentBlock: false,
                         new_feat: {},
                         new_equipment: {},
-                        new_attack: {},
                         ability_scores: [
                             'strength',
                             'dexterity',
@@ -903,14 +945,7 @@
                             this.sheet.attacks = [];
                         }
 
-                        this.sheet.attacks.push({
-                            'name': this.new_attack.name,
-                            'attack_bonus': this.new_attack.attack_bonus,
-                            'damage': this.new_attack.damage,
-                            'type': this.new_attack.type
-                        });
-
-                        this.new_attack = [];
+                        this.sheet.attacks.push({});
                     },
                     addEquipmentToSheet() {
                         if(!this.sheet.hasOwnProperty('equipment')) {
