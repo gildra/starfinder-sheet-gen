@@ -79,7 +79,7 @@
             #notesWidget {}
             #notesWidget textarea {
                 width: 100%;
-                min-height: 100px;
+                min-height: 200px;
                 max-width: 400px;
                 resize: vertical;
             }
@@ -245,8 +245,48 @@
                 width: 60px;
             }
 
+            #equipmentWidget {
+                position: relative;
+            }
+            #equipmentWidget .credits {
+                float: left;
+                width: 60%;
+                margin-bottom: 20px;
+            }
+            #equipmentWidget .credits span {
+                width: 30%;
+                float: left;
+                line-height: 40px;
+                font-weight: bold;
+            }
+            #equipmentWidget .credits input {
+                height: 40px;
+                width: 70%;
+                float: right;
+                text-align: center;
+            }
+            #equipmentWidget .total_bulk {
+                float: right;
+                width: 35%;
+                margin-bottom: 20px;
+            }
+            #equipmentWidget .total_bulk span {
+                float: left;
+                width: 50%;
+                line-height: 40px;
+                font-weight: bold;
+            }
+            #equipmentWidget .total_bulk input {
+                height: 40px;
+                width: 50%;
+                float: right;
+                text-align: center;
+            }
             #equipmentWidget .equipment.readonly {
                 display: none;
+            }
+            #equipmentWidget table.equipmentList {
+                width: 100%;
             }
             #equipmentWidget table.equipmentList td {
                 border-bottom: 1px solid #000;
@@ -256,11 +296,13 @@
                 width: 100%;
                 border:0;
             }
-            #equipmentWidget .newEquipmentBlock {
-                margin-bottom: 20px;
-            }
             #equipmentWidget .new_equipment_button {
                 width: 100px;
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+            #equipmentWidget .newEquipmentBlock {
                 margin-bottom: 20px;
             }
             #equipmentWidget .newEquipmentBlock label {
@@ -655,6 +697,17 @@
 
             <div id="equipmentWidget" class="widget">
                 <h2 class="widgetTitle">Equipment</h2>
+
+                <label class="credits">
+                    <span>Credits</span>
+                    <input v-model="sheet.credits">
+                </label>
+                <label class="total_bulk">
+                    <span>Total Bulk</span>
+                    <input v-bind:value="totalBulk()">
+                </label>
+                <div style="clear: both;"></div>
+
                 <input type="button" class="new_equipment_button" v-bind:value="showNewEquipmentBlock ? 'remove' : 'add'" @click="showNewEquipmentBlock = !showNewEquipmentBlock" />
                 <div v-show="showNewEquipmentBlock" class="newEquipmentBlock">
                     <label>Name</label>
@@ -682,7 +735,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td v-if="sheet.equipment !== undefined && sheet.equipment.length"></td>
+                        <td v-if="sheet.equipment !== undefined && sheet.equipment.length" class="hideOnPrint"></td>
                     </tr>
                 </table>
             </div>
@@ -787,6 +840,18 @@
                     totalAttackBonus() {
                         return (v) => {
                             return Number(this.sheet['bab_'+v] ?? 0) + Number(this.sheet['abi_mod_'+v] ?? 0) + Number(this.sheet['misc_mod_'+v] ?? 0);
+                        }
+                    },
+                    totalBulk() {
+                        return (v) => {
+                            let total = 0;
+                            if(this.sheet['equipment'] !== undefined) {
+                                this.sheet['equipment'].forEach(item => {
+                                    let bulk = Number(item.bulk);
+                                    total = total + (Number.isInteger(bulk) ? bulk : 0);
+                                });
+                            }
+                            return total;
                         }
                     }
                 },
