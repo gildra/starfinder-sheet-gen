@@ -160,6 +160,12 @@
                 text-align: center;
                 margin: auto;
             }
+            #skillsWidget tr.untrained .skill_name {
+                color: #ccc;
+            }
+            #skillsWidget tr.untrained input.total {
+                color: #ccc;
+            }
 
             #featsWidget {
                 position: relative;
@@ -579,14 +585,14 @@
                         <th>Misc Mod</th>
                     </thead>
                     <tbody>
-                        <tr v-for="(scaling, skill) in skills">
-                            <td class="capitalize">{{ skill }}</td>
-                            <td class="right uppercase">[{{ scaling }}]</td>
-                            <td><input type="text" readonly v-bind:value="totalAbilityScore(skill)"></td>
-                            <td><input type="text" v-model="sheet['ranks_' + skill]"></td>
-                            <td><input type="text" v-model="sheet['cb_' + skill]"></td>
-                            <td><input type="text" v-model="sheet['ab_' + skill]"></td>
-                            <td><input type="text" v-model="sheet['misc_' + skill]"></td>
+                        <tr v-for="(skill, skill_name) in skills" :class="{untrained: skillIsTrained(skill, skill_name)}">
+                            <td class="capitalize skill_name">{{ skill_name }}</td>
+                            <td class="right uppercase">[{{ skill[0] }}]</td>
+                            <td><input type="text" class="total" readonly v-bind:value="totalAbilityScore(skill_name)"></td>
+                            <td><input type="text" v-model="sheet['ranks_' + skill_name]"></td>
+                            <td><input type="text" v-model="sheet['cb_' + skill_name]"></td>
+                            <td><input type="text" v-model="sheet['ab_' + skill_name]"></td>
+                            <td><input type="text" v-model="sheet['misc_' + skill_name]"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -810,25 +816,25 @@
                             'charisma',
                         ],
                         skills: {
-                            'acrobatics': 'dex',
-                            'athletics': 'str',
-                            'bluff': 'cha',
-                            'computers': 'int',
-                            'culture': 'int',
-                            'diplomacy': 'cha',
-                            'disguise': 'cha',
-                            'engineering': 'int',
-                            'intimidate': 'cha',
-                            'life science': 'int',
-                            'medicine': 'int',
-                            'mysticism': 'wis',
-                            'perception': 'wis',
-                            'physical science': 'int',
-                            'piloting': 'dex',
-                            'sense motive': 'dex',
-                            'sleight of hands': 'dex',
-                            'stealth': 'dex',
-                            'survival': 'dex',
+                            'acrobatics': ['dex'],
+                            'athletics': ['str'],
+                            'bluff': ['cha'],
+                            'computers': ['int', true],
+                            'culture': ['int', true],
+                            'diplomacy': ['cha'],
+                            'disguise': ['cha'],
+                            'engineering': ['int', true],
+                            'intimidate': ['cha'],
+                            'life science': ['int', true],
+                            'medicine': ['int', true],
+                            'mysticism': ['wis', true],
+                            'perception': ['wis'],
+                            'physical science': ['int', true],
+                            'piloting': ['dex'],
+                            'sense motive': ['dex'],
+                            'sleight of hands': ['dex', true],
+                            'stealth': ['dex'],
+                            'survival': ['dex'],
                         }
                     }
                 },
@@ -836,6 +842,11 @@
                     capitalize() {
                         return (v) => {
                             return v.charAt(0).toUpperCase() + v.slice(1);
+                        }
+                    },
+                    skillIsTrained() {
+                        return (skill, skill_name) => {
+                            return skill[1] === true && Number(this.sheet['ranks_'+skill_name] ?? 0) === 0;
                         }
                     },
                     totalAbilityScore() {
