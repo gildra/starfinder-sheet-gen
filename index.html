@@ -601,7 +601,7 @@
             <div id="weaponsWidget" class="widget">
                 <h2 class="widgetTitle">Weapons</h2>
                 <button class="save hideOnPrint" @click="addAttackToSheet"><span class="fa fa-plus"></span></button>
-                <template v-for="weapon in sheet.attacks">
+                <template v-for="weapon, index in sheet.attacks">
                     <div class="weapon">
                         <button class="delete hideOnPrint" @click="deleteItem('attacks', index)"><span class="fa-solid fa-trash-can"></span></button>
                         <div class="divider">
@@ -975,6 +975,7 @@
                     },
                     deleteItem(list, index) {
                         this.sheet[list].splice(index, 1);
+                        this.sheet[list].filter(function(){return true;});
                     }
                 }
             }).mount('#app');
