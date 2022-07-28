@@ -601,7 +601,7 @@
             <div id="weaponsWidget" class="widget">
                 <h2 class="widgetTitle">Weapons</h2>
                 <button class="save hideOnPrint" @click="addAttackToSheet"><span class="fa fa-plus"></span></button>
-                <template v-for="weapon, index in sheet.attacks">
+                <template v-for="(weapon, index) in sheet.attacks">
                     <div class="weapon">
                         <button class="delete hideOnPrint" @click="deleteItem('attacks', index)"><span class="fa-solid fa-trash-can"></span></button>
                         <div class="divider">
@@ -912,7 +912,11 @@
 
                         let link = document.createElement('a');
                         link.href = URL.createObjectURL(blob);
-                        link.download = "character sheet.json";
+                        if(this.sheet.class_level) {
+                            link.download = this.sheet.class_level+".json";
+                        } else {
+                            link.download = "character sheet.json";
+                        }
                         link.click();
                         URL.revokeObjectURL(link.href);
                     },
