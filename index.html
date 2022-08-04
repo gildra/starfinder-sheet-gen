@@ -66,14 +66,16 @@
                 border: 0;
                 margin-left: 10px;
             }
-            #characterDetailsWidget span.class_level input { width: 250px; }
-            #characterDetailsWidget span.size input { width: 120px; }
-            #characterDetailsWidget span.speed input { width: 60px; }
-            #characterDetailsWidget span.gender input { width: 160px; }
-            #characterDetailsWidget span.home_world input { width: 200px; }
-            #characterDetailsWidget span.alignment input { width: 170px; }
-            #characterDetailsWidget span.deity input { width: 190px; }
-            #characterDetailsWidget span.player input { width: 250px; }
+            #characterDetailsWidget span.class_level input { width: 220px; }
+            #characterDetailsWidget span.race input { width: 100px; }
+            #characterDetailsWidget span.theme input { width: 100px; }
+            #characterDetailsWidget span.size input { width: 100px; }
+            #characterDetailsWidget span.speed input { width: 60px; text-align: center; }
+            #characterDetailsWidget span.gender input { width: 80px; }
+            #characterDetailsWidget span.home_world input { width: 180px; }
+            #characterDetailsWidget span.alignment input { width: 160px; }
+            #characterDetailsWidget span.deity input { width: 200px; }
+            #characterDetailsWidget span.player input { width: 200px; }
             #characterDetailsWidget label.class_level input {
 
             }
@@ -414,18 +416,19 @@
                     <span class="class_level">Class/Level<input v-model="sheet.class_level"></span>
                     <span class="race">Race<input v-model="sheet.race"></span>
                     <span class="theme">Theme<input v-model="sheet.theme"></span>
+                    <span class="size">Size<input v-model="sheet.size"></span>
                     <div style="clear: both;"></div>
                 </div>
                 <div>
-                    <span class="size">Size<input v-model="sheet.size"></span>
                     <span class="speed">Speed<input v-model="sheet.speed"></span>
                     <span class="gender">Gender<input v-model="sheet.gender"></span>
+                    <span class="alignment">Alignment<input v-model="sheet.alignment"></span>
                     <span class="home_world">Home World<input v-model="sheet.home_world"></span>
                     <div style="clear: both;"></div>
                 </div>
                 <div>
-                    <span class="alignment">Alignment<input v-model="sheet.alignment"></span>
                     <span class="deity">Deity<input v-model="sheet.deity" type="text"></span>
+                    <span class="character">Character<input v-model="sheet.character"></span>
                     <span class="player">Player<input v-model="sheet.player"></span>
                     <div style="clear: both;"></div>
                 </div>
@@ -912,7 +915,14 @@
 
                         let link = document.createElement('a');
                         link.href = URL.createObjectURL(blob);
-                        if(this.sheet.class_level) {
+                        if(this.sheet.character) {
+                            if(this.sheet.class_level) {
+                                link.download = this.sheet.character + " (" + this.sheet.class_level +").json";
+                            } else {
+                                link.download = this.sheet.character + ".json";
+                            }
+                        }
+                        else if(this.sheet.class_level) {
                             link.download = this.sheet.class_level+".json";
                         } else {
                             link.download = "character sheet.json";
